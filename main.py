@@ -1,25 +1,42 @@
 import pyautogui as pg
 import webbrowser
 import time
+import json
+import datetime
 
+url = open('url.json')
+data = json.load(url)
 
+def autoClick(keyword, qty):
+    chat = pg.locateCenterOnScreen('3.png')
 
-def autoClick(keyword):
-    pg.click(750, 509)
-    time.sleep(0.2)
-    pg.typewrite(keyword, interval=0.2)
-    pg.press('enter')
-    return True
-        
+    if chat is not None:
+        pg.click(chat)
+        for i in range(1, qty + 1):
+            pg.typewrite(keyword)
+            pg.press('enter')
+    else:
+        print('ขออภัยผมหาห้องแชทไม่พบ!!')
+        time.sleep(5)
+        return False
 
-keyword = input('Keyword : ')
-googleOpen = webbrowser.open('http://google.co.th', new=1)
+# Open the web page
+webbrowser.open(data['url_01'])
+# Wait for the web page to load
+time.sleep(5)
 
-time.sleep(1.5)
-if googleOpen == True :
-    autoClick(keyword)
+date_input = input("เวลาที่คุณต้องการให้เปิดใช้งาน (เช่น 13:30) : ")
+keyword = input('ข้อความของคุณ ? ')
+qty = int(data['qty'])
 
-# print(pg.position())
+while True:
+    current_time = datetime.datetime.now().strftime("%H:%M")
 
-
-
+    if current_time == date_input:
+        autoClick(keyword, qty)
+        break
+    else:
+        # Calculate the time to the next minute and sleep until then
+        time_to_next_minute = 60 - int(datetime.datetime.now().strftime("%S"))
+        time.sleep(time_to_next_minute)
+        print('โปรดรอให้ถึง ' + date_input)
